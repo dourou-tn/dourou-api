@@ -4,6 +4,8 @@ const router = require('express').Router();
 
 const userQueries = require('@/queries/users');
 
+const authMiddleware = require('@/middlewares/auth');
+
 router.post('/register', async (req, res) => {
   const { email, password, password_confirmation, username, firstname, lastname, phone } = req.body
 
@@ -101,7 +103,7 @@ router.post('/login', async (req, res) => {
 
 })
 
-router.get('/user', async (req, res) => {
+router.get('/user', authMiddleware, async (req, res) => {
   const user = await userQueries.get({ id: req.user.id });
   res.json({ user: user }).status(200);
 })
