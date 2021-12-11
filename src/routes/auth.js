@@ -51,7 +51,7 @@ router.post('/register', async (req, res) => {
     firstname,
     lastname,
     phone,
-    role_id: 1,
+    role_id: 2,
     password: cryptedPassword,
   });
 
