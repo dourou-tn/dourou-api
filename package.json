@@ -1,0 +1,24 @@
+{
+  "name": "dourou-api",
+  "version": "0.0.1",
+  "description": "The dourou api",
+  "main": "server.js",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "knex": "^0.95.14",
+    "module-alias": "^2.2.2",
+    "moment": "^2.29.1",
+    "mysql": "^2.18.1"
+  },
+  "scripts": {
+    "start": "nodemon src/server.js"
+  },
+  "_moduleAliases": {
+    "@": "./src"
+  }
+}
