@@ -53,5 +53,9 @@ module.exports = {
       updated_at: moment().format('YYY-MM-DD HH:mm:ss'),
     });
     return query;
+  },
+  delete(where) {
+    const query = Knex('users').where(where).delete();
+    return query;
   }
 }

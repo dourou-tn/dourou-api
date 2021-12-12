@@ -1,8 +1,7 @@
-const result = require('dotenv').config({ path: '../.env' });
-console.log(process.env.DB_HOST)
-
+require('dotenv').config({ path: '../.env' });
 require('module-alias/register');
 
+const path = require('path');
 const express = require('express');
 const app = express();
 const cors = require('cors');
@@ -14,6 +13,10 @@ const routes = require('./routes')
 app.use(express.json());
 
 app.use('/api', routes)
+
+// static file for images
+const dir = path.join(process.env.PWD, process.env.STORAGE_FOLDER);
+app.use(express.static(dir));
 
 /**** Home page (TEST) ****/
 app.get('/', (req, res) => {

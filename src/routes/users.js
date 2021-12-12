@@ -1,7 +1,11 @@
 const bcrypt = require("bcryptjs");
 
 const router = require('express').Router();
+
 const userQueries = require('@/queries/users');
+const imagableQueries = require('@/queries/imagables');
+const { writeImage } = require('@/tools/Imager');
+
 
 const validateUserInput = (user, config) => {
   const errors = {};
@@ -13,7 +17,7 @@ const validateUserInput = (user, config) => {
   }
 
   // different behavior for edit
-  if (config.edit) {
+  if (config?.edit) {
     if (password && password.lenght < 8) {
       errors.password = 'password must be at least 8 characters';
     }
@@ -82,6 +86,18 @@ router.post('/', async (req, res) => {
       password: cryptedPassword
     });
 
+    // save image
+    if (req.body.image) {
+      const image = await writeImage(req.body.image, `users`);
+
+      await imagableQueries.create({
+        imagable_id: userCreatedId,
+        imagable_type: 'User',
+        image_path: image.path.replace('storage/', ''),
+        image_name: image.name,
+      });
+    }
+
     if (userCreatedId) {
       const user = await userQueries.get({ id: userCreatedId}).first();
       return res.status(200).json(user);
@@ -111,5 +127,12 @@ router.put('/:id', async (req, res) => {
     return res.status(500).json(error);
   }
 
+})
+
+router.delete('/:id', async (req, res) => {
+  const userDeleted = await userQueries.delete({ id: req.params.id });
+  if (userDeleted > 0) {
+    return res.json(user);
+  }
 })
 module.exports = router;

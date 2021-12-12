@@ -13,7 +13,8 @@
     "knex": "^0.95.14",
     "module-alias": "^2.2.2",
     "moment": "^2.29.1",
-    "mysql": "^2.18.1"
+    "mysql": "^2.18.1",
+    "uuid": "^8.3.2"
   },
   "scripts": {
     "start": "nodemon src/server.js"
