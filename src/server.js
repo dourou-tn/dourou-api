@@ -1,4 +1,6 @@
-require('dotenv').config();
+const result = require('dotenv').config({ path: '../.env' });
+console.log(process.env.DB_HOST)
+
 require('module-alias/register');
 
 const express = require('express');
@@ -13,7 +15,7 @@ app.use(express.json());
 
 app.use('/api', routes)
 
-/**** Home page (FRONT END) ****/
+/**** Home page (TEST) ****/
 app.get('/', (req, res) => {
   res.json({ success: req.body });
 });
