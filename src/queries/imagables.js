@@ -19,4 +19,16 @@ module.exports = {
       updated_at: moment().format('YYY-MM-DD HH:mm:ss'),
     })
   },
+
+  update(data, where) {
+    return this.orm('imagables').where(where).update(data);
+  },
+
+  delete (where) {
+    return this.orm('imagables').where(where).del();
+  },
+
+  get (where) {
+    return this.orm('imagables').where(where);
+  }
 }

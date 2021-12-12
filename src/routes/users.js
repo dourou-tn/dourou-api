@@ -135,6 +135,26 @@ router.put('/:id', async (req, res) => {
   }
 
   try {
+    imagableQueries.set();
+    if (req.body.image) {
+      if (user.image_path) {
+        await removeImage(user.image_path);
+        await imagableQueries.delete({ imagable_id: req.body.id, imagable_type: 'User' });
+      }
+  
+      // create the new image save in disk and db
+      const imageSaved = await writeImage(req.body.image, `users`);
+      await imagableQueries.create({
+        imagable_id: req.body.id,
+        imagable_type: 'User',
+        image_path: imageSaved.path,
+        image_name: imageSaved.name,
+      });
+
+      delete req.body.image;
+      delete req.body.image_path;
+    }
+
     userQueries.set();
     const userUpdated = await userQueries.update(req.params.id, user);
     return res.status(200).json(userUpdated);

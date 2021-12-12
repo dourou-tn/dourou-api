@@ -26,7 +26,7 @@ module.exports = {
       'usr.lastname',
       'usr.role_id',
       'usr.phone',
-      'img.image_path as image_url',
+      'img.image_path as image_path',
     )
     if (where) {
       query.where(where);
@@ -34,10 +34,13 @@ module.exports = {
     if (include_password) {
       query.select('password');
     }
-    query.leftJoin('imagables as img', { 'img.imagable_id': 'usr.id' });
+    // next join imagables with type equal user
+    query.leftJoin('imagables as img', { 'img.imagable_id': 'usr.id', 'img.imagable_type': Knex.raw('?', ['User']) })
+    // query.leftJoin('imagables as img', { 'img.imagable_id': 'usr.id', 'img.imagable_type': 'User' });
+    console.log(query.toString());
     return query;
   },
-  async create(data) {
+  create(data) {
     const query = this.orm('users').insert({
       email: data.email,
       username: data.username,
@@ -46,19 +49,23 @@ module.exports = {
       phone: data.phone,
       role_id: data.role_id,
       password: data.password,
-      created_at: moment().format('YYY-MM-DD HH:mm:ss'),
-      updated_at: moment().format('YYY-MM-DD HH:mm:ss'),
+      created_at: moment().format('YYYY-MM-DD HH:mm:ss'),
+      updated_at: moment().format('YYYY-MM-DD HH:mm:ss'),
     });
     return query;
   },
   update (id, data) {
+    console.log('data', data);
     if (data.password_confirmation) {
       delete data.password_confirmation;
+    }
+    if (data.image_path) {
+      delete data.image_path;
     }
 
     const query = this.orm('users').where({ id }).update({
       ...data,
-      updated_at: moment().format('YYY-MM-DD HH:mm:ss'),
+      updated_at: moment().format('YYYY-MM-DD HH:mm:ss'),
     });
     return query;
   },

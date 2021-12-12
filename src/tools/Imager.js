@@ -16,7 +16,6 @@ const writeImage = (base64, folder) => {
 }
 
 const removeImage = async (imgPath) => {
-  console.log('imgPath', imgPath)
   const fullPath = path.join(process.env.STORAGE_FOLDER, imgPath);
   fs.unlinkSync(fullPath);
 }
