@@ -1,10 +1,10 @@
 const bcrypt = require("bcryptjs");
 
 const router = require('express').Router();
-
+const Knex = require('@/tools/Knex');
 const userQueries = require('@/queries/users');
 const imagableQueries = require('@/queries/imagables');
-const { writeImage } = require('@/tools/Imager');
+const { writeImage, removeImage } = require('@/tools/Imager');
 
 
 const validateUserInput = (user, config) => {
@@ -63,6 +63,7 @@ exports.validateUserInput = validateUserInput;
 // get all users
 router.get('/', async (req, res) => {
   try {
+    userQueries.set();
     const users = await userQueries.get();
     return res.status(200).json(users);
   } catch (error) {
@@ -80,30 +81,44 @@ router.post('/', async (req, res) => {
 
   const cryptedPassword = await bcrypt.hash(req.body.password, 10);
 
+  const trx = await Knex.transaction();
+  userQueries.set(trx);
+  imagableQueries.set(trx);
+
+  let image = null;
+
   try {
     const userCreatedId = await userQueries.create({
       ...req.body,
       password: cryptedPassword
     });
 
-    // save image
-    if (req.body.image) {
-      const image = await writeImage(req.body.image, `users`);
-
-      await imagableQueries.create({
-        imagable_id: userCreatedId,
-        imagable_type: 'User',
-        image_path: image.path.replace('storage/', ''),
-        image_name: image.name,
-      });
-    }
-
     if (userCreatedId) {
-      const user = await userQueries.get({ id: userCreatedId}).first();
+      const user = await userQueries.get({ 'usr.id': userCreatedId}).first();
+
+      // save image
+      if (req.body.image) {
+        image = await writeImage(req.body.image, `users`);
+
+        await imagableQueries.create({
+          imagable_id: userCreatedId,
+          imagable_type: 'User',
+          image_path: image.path,
+          image_name: image.name,
+        });
+      }
+
+      await trx.commit();
       return res.status(200).json(user);
     }
   } catch (error) {
-    console.error(error);
+    console.error(error)
+
+    if (image && req.body.image) {
+      removeImage(image.path)
+    }
+
+    await trx.rollback();
     return res.status(500).json(error);
   }
 })
@@ -120,6 +135,7 @@ router.put('/:id', async (req, res) => {
   }
 
   try {
+    userQueries.set();
     const userUpdated = await userQueries.update(req.params.id, user);
     return res.status(200).json(userUpdated);
   } catch (error) {
@@ -130,9 +146,18 @@ router.put('/:id', async (req, res) => {
 })
 
 router.delete('/:id', async (req, res) => {
-  const userDeleted = await userQueries.delete({ id: req.params.id });
-  if (userDeleted > 0) {
-    return res.json(user);
+  userQueries.set();
+  try {
+    const user = await userQueries.get({ 'usr.id': req.params.id }).first();
+    const userDeleted = await userQueries.delete({ id: req.params.id });
+    if (userDeleted > 0) {
+      removeImage();
+      return res.json(userDeleted);
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
   }
+
 })
 module.exports = router;

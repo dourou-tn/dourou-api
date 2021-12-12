@@ -45,6 +45,9 @@ router.post('/register', async (req, res) => {
   }
 
   const cryptedPassword = await bcrypt.hash(password, 10);
+
+  userQueries.set();
+
   await userQueries.create({
     email,
     username,
@@ -81,6 +84,7 @@ router.post('/login', async (req, res) => {
   }
 
   try {
+    userQueries.set();
     let [user] = await userQueries.get({ email: email }, true);
     if (user) {
       const samePassword = await bcrypt.compare(password, user.password.toString())
@@ -104,6 +108,7 @@ router.post('/login', async (req, res) => {
 })
 
 router.get('/user', authMiddleware, async (req, res) => {
+  userQueries.set();
   const user = await userQueries.get({ id: req.user.id });
   res.json({ user: user }).status(200);
 })

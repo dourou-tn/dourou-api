@@ -3,8 +3,14 @@ const moment = require('moment');
 const Knex = require('@/tools/Knex');
 
 module.exports = {
+  orm: null,
+
+  set (orm = Knex) {
+    this.orm = orm;
+  },
+
   create(data) {
-    return Knex('imagables').insert({
+    return this.orm('imagables').insert({
       imagable_type: data.imagable_type,
       imagable_id: data.imagable_id,
       image_path: data.image_path,
