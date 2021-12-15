@@ -20,10 +20,13 @@ module.exports = {
       'prod.updated_at',
       'img.image_path as image_path',
     )
+
     if (where) {
       query.where(where);
     }
-    query.leftJoin('imagables as img', { 'img.imagable_id': 'prod.id' });
+
+    query.leftJoin('imagables as img', { 'img.imagable_id': 'prod.id', 'img.imagable_type': Knex.raw('?', ['Product']) });
+
     return query;
   },
 

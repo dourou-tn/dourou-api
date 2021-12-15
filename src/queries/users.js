@@ -28,16 +28,17 @@ module.exports = {
       'usr.phone',
       'img.image_path as image_path',
     )
+
     if (where) {
       query.where(where);
     }
+
     if (include_password) {
       query.select('password');
     }
-    // next join imagables with type equal user
+
     query.leftJoin('imagables as img', { 'img.imagable_id': 'usr.id', 'img.imagable_type': Knex.raw('?', ['User']) })
-    // query.leftJoin('imagables as img', { 'img.imagable_id': 'usr.id', 'img.imagable_type': 'User' });
-    console.log(query.toString());
+
     return query;
   },
   create(data) {
