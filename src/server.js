@@ -4,6 +4,7 @@ require('module-alias/register');
 const path = require('path');
 const cors = require('cors');
 
+const swaggerUi = require('swagger-ui-express');
 const express = require('express');
 const app = express();
 
@@ -14,7 +15,7 @@ app.use(cors())
 /** Without this 2 middlewares req.body is undefined */
 app.use(express.json());
 
-
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(require('../swagger.json')))
 
 /** Static storage folder for images */
 const dir = path.join(process.env.PWD, process.env.STORAGE_FOLDER);

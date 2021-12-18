@@ -1,0 +1,297 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "0.0.1",
+    "title": "Dourou",
+    "description": "Dourou API"
+  },
+  "host": "localhost:5000",
+  "basePath": "/api",
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "Auth API"
+    },
+    {
+      "name": "Users",
+      "description": "Users API"
+    },
+    {
+      "name": "Products",
+      "description": "Products Api"
+    },
+    {
+      "name": "Auctions",
+      "description": "Auctions Api"
+    },
+    {
+      "name": "Bids",
+      "description": "Bids Api"
+    }
+  ],
+  "schemes": [
+    "http"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/users": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get all users",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Users"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Create a new user",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "user",
+            "description": "User object that needs to be added to the store",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CreateUser"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/users/{id}": {
+      "put": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Update a user",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "ID of user that needs to be updated",
+            "required": true,
+            "type": "integer",
+            "format": "int"
+          },
+          {
+            "in": "body",
+            "name": "user",
+            "description": "User object that needs to be updated",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UpdateUser"
+            }
+          }
+        ],
+        "responses":{
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Delete a user",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "ID of user that needs to be deleted",
+            "required": true,
+            "type": "integer",
+            "format": "int"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "CreateUser": {
+      "required": [
+        "username",
+        "email",
+        "password",
+        "password_confirmation",
+        "firstname",
+        "lastname",
+        "phone",
+        "role_id"
+      ],
+      "properties": {
+        "username": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 20
+        },
+        "email": {
+          "type": "string",
+          "format": "email"
+        },
+        "password": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 20
+        },
+        "password_confirmation": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 20
+        },
+        "firstname": {
+          "type": "string"
+        },
+        "lastname": {
+          "type": "string"
+        },
+        "phone": {
+          "type":"string"
+        },
+        "image": {
+          "type": "string",
+          "format": "byte"
+        },
+        "role_id": {
+          "type": "number",
+          "default": 2
+        }
+      }
+    },
+    "UpdateUser": {
+      "required": [
+        "username",
+        "email",
+        "firstname",
+        "lastname",
+        "phone",
+        "role_id"
+      ],
+      "properties": {
+        "username": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 20
+        },
+        "email": {
+          "type": "string",
+          "format": "email"
+        },
+        "password": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 20
+        },
+        "password_confirmation": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 20
+        },
+        "firstname": {
+          "type": "string"
+        },
+        "lastname": {
+          "type": "string"
+        },
+        "phone": {
+          "type":"string"
+        },
+        "image": {
+          "type": "string",
+          "format": "byte"
+        },
+        "role_id": {
+          "type": "number",
+          "default": 2
+        }
+      }
+    },
+    "User": {
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "username": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 20
+        },
+        "email": {
+          "type": "string",
+          "format": "email"
+        },
+        "firstname": {
+          "type": "string"
+        },
+        "lastname": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "image": {
+          "type": "string"
+        },
+        "role_id": {
+          "type": "number",
+          "default": 2
+        }
+      }
+    },
+    "Users": {
+      "type": "array",
+      "$ref": "#/definitions/User"
+    }
+  }
+}

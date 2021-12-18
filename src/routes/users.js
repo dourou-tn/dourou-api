@@ -125,6 +125,7 @@ router.post('/', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
   const errors = validateUserInput(req.body, { edit: true })
+  console.log('errors', errors)
   if (Object.keys(errors).length > 0) {
     return res.status(400).json(errors);
   }
@@ -155,9 +156,18 @@ router.put('/:id', async (req, res) => {
       delete req.body.image_path;
     }
 
-    userQueries.set();
-    const userUpdated = await userQueries.update(req.params.id, user);
-    return res.status(200).json(userUpdated);
+    try {
+      userQueries.set();
+      const promises = [userQueries.update(req.params.id, user), userQueries.get({ 'usr.id': req.params.id }).first()];
+
+      const [userUpdated, userUpdatedData] = await Promise.all(promises);
+
+      return res.status(200).json(userUpdatedData);
+    } catch (error) {
+      console.error(error)
+      return res.status(500).json(error);
+    }
+
   } catch (error) {
     console.error(error);
     return res.status(500).json(error);
@@ -170,8 +180,11 @@ router.delete('/:id', async (req, res) => {
   try {
     const user = await userQueries.get({ 'usr.id': req.params.id }).first();
     const userDeleted = await userQueries.delete({ id: req.params.id });
+    console.log('userDeleted', userDeleted)
+    console.log('user', user)
+    console.log('user.image_path', user.image_path)
     if (userDeleted > 0) {
-      removeImage();
+      removeImage(user.image_path);
       return res.json(userDeleted);
     }
   } catch (error) {
