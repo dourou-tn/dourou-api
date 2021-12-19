@@ -13,20 +13,20 @@ router.post('/auth/user', authMiddleware, auth.user);
 
 // users
 router.get('/users', authMiddleware, users.index);
-router.post('/users', users.store);
-router.put('/users/:id', users.update);
-router.delete('/users/:id', users.delete);
+router.post('/users', authMiddleware, users.store);
+router.put('/users/:id', authMiddleware, users.update);
+router.delete('/users/:id', authMiddleware, users.delete);
 
 // products
-router.get('/products', products.index);
-router.post('/products', products.store);
-router.put('/products/:id', products.update);
-router.delete('/products/:id', products.delete);
+router.get('/products', authMiddleware, products.index);
+router.post('/products', authMiddleware, products.store);
+router.put('/products/:id', authMiddleware, products.update);
+router.delete('/products/:id', authMiddleware, products.delete);
 
 // auctions
-router.get('/auctions', auctions.index);
-router.post('/auctions', auctions.store);
-router.put('/auctions/:id', auctions.update);
-router.delete('/auctions/:id', auctions.delete);
+router.get('/auctions', authMiddleware, auctions.index);
+router.post('/auctions', authMiddleware, auctions.store);
+router.put('/auctions/:id', authMiddleware, auctions.update);
+router.delete('/auctions/:id', authMiddleware, auctions.delete);
 
 module.exports = router
