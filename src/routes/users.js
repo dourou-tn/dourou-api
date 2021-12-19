@@ -123,6 +123,7 @@ exports.store = async (req, res) => {
 
 exports.update = async (req, res) => {
   const errors = validateUserInput(req.body, { edit: true })
+  console.log('errors', errors)
   if (Object.keys(errors).length > 0) {
     return res.status(400).json(errors);
   }
@@ -153,9 +154,18 @@ exports.update = async (req, res) => {
       delete req.body.image_path;
     }
 
-    userQueries.set();
-    const userUpdated = await userQueries.update(req.params.id, user);
-    return res.status(200).json(userUpdated);
+    try {
+      userQueries.set();
+      const promises = [userQueries.update(req.params.id, user), userQueries.get({ 'usr.id': req.params.id }).first()];
+
+      const [userUpdated, userUpdatedData] = await Promise.all(promises);
+
+      return res.status(200).json(userUpdatedData);
+    } catch (error) {
+      console.error(error)
+      return res.status(500).json(error);
+    }
+
   } catch (error) {
     console.error(error);
     return res.status(500).json(error);

@@ -4,6 +4,7 @@ require('module-alias/register');
 const path = require('path');
 const cors = require('cors');
 
+const swaggerUi = require('swagger-ui-express');
 const express = require('express');
 const app = express();
 
@@ -16,7 +17,7 @@ app.use(express.json({ limit: '50mb' }));
 // app.use(express.urlencoded({ limit: '50mb' }));
 
 
-
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(require('../swagger.json')))
 
 /** Static storage folder for images */
 const dir = path.join(process.env.PWD, process.env.STORAGE_FOLDER);
