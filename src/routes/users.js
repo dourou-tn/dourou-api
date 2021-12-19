@@ -167,11 +167,16 @@ router.put('/:id', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
   userQueries.set();
+  imagableQueries.set();
   try {
     const user = await userQueries.get({ 'usr.id': req.params.id }).first();
-    const userDeleted = await userQueries.delete({ id: req.params.id });
+    if (!user) {
+      return res.status(400).json({ message: 'User not found' });
+    }
+    const userDeleted = await userQueries.delete({ id: user.id });
     if (userDeleted > 0) {
-      removeImage();
+      removeImage(user.image_path);
+      await imagableQueries.delete({ imagable_id: user.id, imagable_type: 'User' });
       return res.json(userDeleted);
     }
   } catch (error) {

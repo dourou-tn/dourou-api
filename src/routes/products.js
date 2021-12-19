@@ -146,11 +146,13 @@ router.put('/:id', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
   productQueries.set();
+  imagableQueries.set();
   try {
     const product = await productQueries.get({ 'prod.id': req.params.id }).first();
-    const productDeleted = await productQueries.delete({ id: req.params.id });
+    const productDeleted = await productQueries.delete({ id: product.id });
     if (productDeleted > 0) {
       removeImage(product.image_path);
+      await imagableQueries.delete({ imagable_id: product.id, imagable_type: 'Product' });
       return res.json(productDeleted);
     }
   } catch (error) {

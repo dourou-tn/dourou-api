@@ -14,6 +14,7 @@ module.exports = {
       'act.id',
       'act.description',
       'act.start_date',
+      'act.start_time',
       'act.product_id',
       'act.is_finished',
       'act.subscribe_price',
@@ -27,13 +28,16 @@ module.exports = {
       query.where(where);
     }
     query.join('products as prod', { 'prod.id': 'act.product_id' });
+    console.log('query', query.toString());
     return query;
   },
 
   async create(data) {
     return this.orm('auctions').insert({
+      uiid: data.uiid,
       description: data.description,
       start_date: data.start_date,
+      start_time: data.start_time,
       product_id: data.product_id,
       is_finished: data.is_finished,
       subscribe_price: data.subscribe_price,
@@ -58,7 +62,7 @@ module.exports = {
   },
 
   delete(where) {
-    const query = this.orm('products').where(where).delete();
+    const query = this.orm('auctions').where(where).delete();
     return query;
   }
 }

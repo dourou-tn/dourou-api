@@ -2,6 +2,8 @@ const moment = require('moment');
 const router = require('express').Router();
 const auctionQueries = require('@/queries/auctions');
 const productQueries = require('@/queries/products');
+// import uiid 4
+const { v4: uuidv4 } = require('uuid');
 
 const validateAuctionInput = (auction, config = null) => {
   const errors = {};
@@ -69,17 +71,21 @@ router.post('/', async (req, res) => {
   }
 
   try {
+    console.log('product from backedn', req.body)
+    const { start_date, description, start_time, product_id, subscribe_price, start_price, max_size } = req.body;
+
 
     productQueries.set();
-    const product = await productQueries.get({ id: product_id });
+    const product = await productQueries.get({ 'prod.id': product_id });
     if (!product) {
       return res.status(400).json({ success: false, error: `Product with ${product_id} does not exists!` });
     }
 
     auctionQueries.set();
-
-    const auctionCreatedId = auctionQueries.create({
+    const [auctionCreatedId] = await auctionQueries.create({
+      uiid: uuidv4(),
       start_date: `${start_date} ${start_time}`,
+      description,
       product_id,
       start_date,
       start_time,
@@ -90,7 +96,9 @@ router.post('/', async (req, res) => {
     });
 
     if (auctionCreatedId) {
-      const auction = await auctionQueries.get({ id: auctionCreatedId }).first();
+      console.log('auctionCreatedId', auctionCreatedId);
+      const auction = await auctionQueries.get({ 'act.id': auctionCreatedId }).first();
+      // const auction = await auctionQueries.get({ 'act.id': auctionCreatedId }).first();
       return res.status(200).json(auction);
     }
 
@@ -134,7 +142,8 @@ router.put('/:id', async (req, res) => {
 })
 
 router.delete('/:id', async (req, res) => {
-  const auction = await auctionQueries.get({ id: req.params.id }).first();
+  auctionQueries.set();
+  const auction = await auctionQueries.get({ 'act.id': req.params.id }).first();
   if (!auction) {
     return res.status(400).json({ success: false, error: `Auction with ${req.params.id} does not exists!` });
   }
@@ -151,4 +160,12 @@ router.delete('/:id', async (req, res) => {
   }
 })
 
+router.get('/:id', async (req, res) => {
+  auctionQueries.set();
+  const auction = await auctionQueries.get({ 'act.id': req.params.id }).first();
+  if (!auction) {
+    return res.status(400).json({ success: false, error: `Auction with ${req.params.id} does not exists!` });
+  }
+  return res.status(200).json(auction);
+})
 module.exports = router;
