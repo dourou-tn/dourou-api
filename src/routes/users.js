@@ -60,8 +60,7 @@ const validateUserInput = (user, config) => {
 
 exports.validateUserInput = validateUserInput;
 
-// get all users
-router.get('/', async (req, res) => {
+exports.index = async (req, res) => {
   try {
     userQueries.set();
     const users = await userQueries.get();
@@ -70,9 +69,9 @@ router.get('/', async (req, res) => {
     console.error(error);
     return res.status(500).json(error);
   }
-});
+}
 
-router.post('/', async (req, res) => {
+exports.store = async (req, res) => {
   const errors = validateUserInput(req.body)
 
   if (Object.keys(errors).length > 0) {
@@ -94,7 +93,7 @@ router.post('/', async (req, res) => {
     });
 
     if (userCreatedId) {
-      const user = await userQueries.get({ 'usr.id': userCreatedId}).first();
+      const user = await userQueries.get({ 'usr.id': userCreatedId }).first();
 
       // save image
       if (req.body.image) {
@@ -121,9 +120,9 @@ router.post('/', async (req, res) => {
     await trx.rollback();
     return res.status(500).json(error);
   }
-})
+}
 
-router.put('/:id', async (req, res) => {
+exports.update = async (req, res) => {
   const errors = validateUserInput(req.body, { edit: true })
   if (Object.keys(errors).length > 0) {
     return res.status(400).json(errors);
@@ -141,7 +140,7 @@ router.put('/:id', async (req, res) => {
         await removeImage(user.image_path);
         await imagableQueries.delete({ imagable_id: req.body.id, imagable_type: 'User' });
       }
-  
+
       // create the new image save in disk and db
       const imageSaved = await writeImage(req.body.image, `users`);
       await imagableQueries.create({
@@ -163,9 +162,9 @@ router.put('/:id', async (req, res) => {
     return res.status(500).json(error);
   }
 
-})
+}
 
-router.delete('/:id', async (req, res) => {
+exports.delete = async (req, res) => {
   userQueries.set();
   imagableQueries.set();
   try {
@@ -184,5 +183,4 @@ router.delete('/:id', async (req, res) => {
     res.status(500).json(error);
   }
 
-})
-module.exports = router;
+}

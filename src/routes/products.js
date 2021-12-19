@@ -40,7 +40,7 @@ const validateProductInput = (product, config = null) => {
 
 exports.validateProductInput = validateProductInput;
 
-router.get('/', async (req, res) => {
+exports.index = async (req, res) => {
   try {
     productQueries.set();
     const products = await productQueries.get();
@@ -49,9 +49,9 @@ router.get('/', async (req, res) => {
     console.error(error);
     return res.status(500).json(error);
   }
-});
+}
 
-router.post('/', async (req, res) => {
+exports.store = async (req, res) => {
   const errors = validateProductInput(req.body)
 
   if (Object.keys(errors).length > 0) {
@@ -95,9 +95,9 @@ router.post('/', async (req, res) => {
     await trx.rollback();
     return res.status(500).json(error);
   }
-})
+}
 
-router.put('/:id', async (req, res) => {
+exports.update = async (req, res) => {
 
   const errors = validateProductInput(req.body, { edit: true })
   if (Object.keys(errors).length > 0) {
@@ -142,9 +142,9 @@ router.put('/:id', async (req, res) => {
     return res.status(500).json(error);
   }
 
-})
+}
 
-router.delete('/:id', async (req, res) => {
+exports.delete = async (req, res) => {
   productQueries.set();
   imagableQueries.set();
   try {
@@ -159,6 +159,4 @@ router.delete('/:id', async (req, res) => {
     console.log(error);
     res.status(500).json(error);
   }
-})
-
-module.exports = router;
+}

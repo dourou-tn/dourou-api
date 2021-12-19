@@ -4,9 +4,7 @@ const router = require('express').Router();
 
 const userQueries = require('@/queries/users');
 
-const authMiddleware = require('@/middlewares/auth');
-
-router.post('/register', async (req, res) => {
+exports.register = async (req, res) => {
   const { email, password, password_confirmation, username, firstname, lastname, phone } = req.body
 
   if (!email) {
@@ -68,9 +66,9 @@ router.post('/register', async (req, res) => {
 
   user.token = token;
   return res.status(201).json({ success: true, data: user });
-});
+}
 
-router.post('/login', async (req, res) => {
+exports.login = async (req, res) => {
   const { email, password } = req.body;
 
   if (!email) {
@@ -105,12 +103,10 @@ router.post('/login', async (req, res) => {
     return res.status(500).json({ error: 'fqq' })
   }
 
-})
+}
 
-router.get('/user', authMiddleware, async (req, res) => {
+exports.user = async (req, res) => {
   userQueries.set();
   const user = await userQueries.get({ id: req.user.id });
   res.json({ user: user }).status(200);
-})
-
-module.exports = router;
+}

@@ -44,7 +44,7 @@ const validateAuctionInput = (auction, config = null) => {
 
 exports.validateAuctionInput = validateAuctionInput;
 
-router.get('/', async (req, res) => {
+exports.index = async (req, res) => {
   try {
     auctionQueries.set();
     const auctions = await auctionQueries.get();
@@ -61,9 +61,9 @@ router.get('/', async (req, res) => {
     console.error(error);
     return res.status(500).json(error);
   }
-});
+}
 
-router.post('/', async (req, res) => {
+exports.store = async (req, res) => {
   const errors = validateAuctionInput(req.body)
 
   if (Object.keys(errors).length > 0) {
@@ -106,9 +106,9 @@ router.post('/', async (req, res) => {
     console.error(error)
     return res.status(500).json(error);
   }
-})
+}
 
-router.put('/:id', async (req, res) => {
+exports.update = async (req, res) => {
   const errors = validateAuctionInput(req.body, { edit: true })
   if (Object.keys(errors).length > 0) {
     return res.status(400).json(errors);
@@ -139,9 +139,9 @@ router.put('/:id', async (req, res) => {
     return res.status(500).json(error);
   }
 
-})
+}
 
-router.delete('/:id', async (req, res) => {
+exports.delete = async (req, res) => {
   auctionQueries.set();
   const auction = await auctionQueries.get({ 'act.id': req.params.id }).first();
   if (!auction) {
@@ -158,14 +158,13 @@ router.delete('/:id', async (req, res) => {
     console.log(error);
     res.status(500).json(error);
   }
-})
+}
 
-router.get('/:id', async (req, res) => {
+exports.show = async (req, res) => {
   auctionQueries.set();
   const auction = await auctionQueries.get({ 'act.id': req.params.id }).first();
   if (!auction) {
     return res.status(400).json({ success: false, error: `Auction with ${req.params.id} does not exists!` });
   }
   return res.status(200).json(auction);
-})
-module.exports = router;
+}
