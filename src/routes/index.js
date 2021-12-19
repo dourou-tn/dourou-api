@@ -7,12 +7,12 @@ const products = require('./products');
 const auctions = require('./auctions');
 
 // auth
-router.post('/register', auth.register);
-router.post('/login', auth.login);
-router.post('/user', authMiddleware, auth.user);
+router.post('/auth/register', auth.register);
+router.post('/auth/login', auth.login);
+router.post('/auth/user', authMiddleware, auth.user);
 
 // users
-router.get('/users', users.index);
+router.get('/users', authMiddleware, users.index);
 router.post('/users', users.store);
 router.put('/users/:id', users.update);
 router.delete('/users/:id', users.delete);
