@@ -1,6 +1,5 @@
 const bcrypt = require("bcryptjs");
 
-const router = require('express').Router();
 const Knex = require('@/tools/Knex');
 const userQueries = require('@/queries/users');
 const imagableQueries = require('@/queries/imagables');

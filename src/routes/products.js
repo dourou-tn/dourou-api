@@ -1,4 +1,3 @@
-const router = require('express').Router();
 const Knex = require('@/tools/Knex');
 
 const productQueries = require('@/queries/products');

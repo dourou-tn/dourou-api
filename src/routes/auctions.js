@@ -1,5 +1,4 @@
 const moment = require('moment');
-const router = require('express').Router();
 const auctionQueries = require('@/queries/auctions');
 const productQueries = require('@/queries/products');
 // import uiid 4
