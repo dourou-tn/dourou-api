@@ -70,7 +70,6 @@ exports.store = async (req, res) => {
   }
 
   try {
-    console.log('product from backedn', req.body)
     const { start_date, description, start_time, product_id, subscribe_price, start_price, max_size } = req.body;
 
 
@@ -95,7 +94,6 @@ exports.store = async (req, res) => {
     });
 
     if (auctionCreatedId) {
-      console.log('auctionCreatedId', auctionCreatedId);
       const auction = await auctionQueries.get({ 'act.id': auctionCreatedId }).first();
       // const auction = await auctionQueries.get({ 'act.id': auctionCreatedId }).first();
       return res.status(200).json(auction);
@@ -154,7 +152,6 @@ exports.delete = async (req, res) => {
     }
     return res.status(200).json(auctionDeleted);
   } catch (error) {
-    console.log(error);
     res.status(500).json(error);
   }
 }

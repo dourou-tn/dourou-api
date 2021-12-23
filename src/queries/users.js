@@ -56,7 +56,6 @@ module.exports = {
     return query;
   },
   update (id, data) {
-    console.log('data', data);
     if (data.password_confirmation) {
       delete data.password_confirmation;
     }

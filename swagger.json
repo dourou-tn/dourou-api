@@ -39,6 +39,131 @@
     "application/json"
   ],
   "paths": {
+    "/auth/register": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Register a new user",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "user",
+            "description": "User object that needs to be created",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CreateUser"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean"
+                },
+                "message": {
+                  "type": "string",
+                  "default": "User created successfully"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "$ref": "#/definitions/User"
+                    },
+                    "token": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Authorization information is missing or invalid"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Authenticate user and get a token",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "user",
+            "description": "Email and password",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/LoginUser"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean"
+                },
+                "token": {
+                  "type": "string"
+                },
+                "user": {
+                  "$ref": "#/definitions/User"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid email or password"
+          },
+          "401": {
+            "description": "Authorization information is missing or invalid"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/auth/user": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Get logged user from token",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "401": {
+            "description": "Authorization information is missing or invalid"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/users": {
       "get": {
         "tags": [
@@ -292,6 +417,24 @@
     "Users": {
       "type": "array",
       "$ref": "#/definitions/User"
+    },
+    "LoginUser": {
+      "type": "object",
+      "required": [
+        "email",
+        "password"
+      ],
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email"
+        },
+        "password": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 20
+        }
+      }
     }
   }
 }

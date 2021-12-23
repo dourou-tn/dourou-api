@@ -28,7 +28,6 @@ module.exports = {
       query.where(where);
     }
     query.join('products as prod', { 'prod.id': 'act.product_id' });
-    console.log('query', query.toString());
     return query;
   },
 

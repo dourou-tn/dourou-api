@@ -1,89 +1,98 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
-const router = require('express').Router();
 
 const userQueries = require('@/queries/users');
+const Error = require('./../tools/Error');
 
 exports.register = async (req, res) => {
   const { email, password, password_confirmation, username, firstname, lastname, phone } = req.body
 
+  const errors = {};
+
   if (!email) {
-    console.error('Error Email')
-    return res.status(400).json({ code: 400, error: 'email is required' });
+    errors.email = 'Email is required';
   }
 
   if (!password) {
-    console.error('Error password')
-    return res.status(400).json({ code: 400, error: 'password is required' });
+    errors.password = 'Password is required';
   }
 
-  if (password !== password_confirmation) {
-    console.error('Error password_confirmation')
-    return res.status(400).json({ code: 400, error: 'password_confirmation need to be same as password' });
+  if (!password_confirmation ||password_confirmation !== password) {
+    errors.password_confirmation = 'password_confirmation need to be same as password';
   }
 
   if (!username) {
-    console.error('Error username')
-    return res.status(400).json({ code: 400, error: 'username is required' });
+    errors.username = 'Username is required';
   }
 
   if (!firstname) {
-    console.error('Error firstname')
-    return res.status(400).json({ code: 400, error: 'firstname is required' });
+    errors.firstname = 'Firstname is required';
   }
 
   if (!lastname) {
-    console.error('Error lastname')
-    return res.status(400).json({ code: 400, error: 'lastname is required' });
+    errors.lastname = 'Lastname is required';
   }
 
   if (!phone) {
-    console.error('Error phone')
-    return res.status(400).json({ code: 400, error: 'phone is required' });
+    errors.phone= 'Phone is required';
   }
 
-  const cryptedPassword = await bcrypt.hash(password, 10);
+  if (Object.keys(errors).length > 0) {
+    return res.status(400).json(Error(400, 'Invalid data', errors));
+  }
 
-  userQueries.set();
+  try {
+    const cryptedPassword = await bcrypt.hash(password, 10);
+    userQueries.set();
+    // check if no user with phone or email exists in db
+    const usersWithSameCredentials = await userQueries.get({ 'usr.email': email }).orWhere({ 'usr.phone': phone });
+    if (usersWithSameCredentials.length) {
+      return res.status(400).json(Error(400, `Email: ${email} or Phone: ${phone} already exists`));
+    }
+    const [userCreatedId] = await userQueries.create({
+      email,
+      username,
+      firstname,
+      lastname,
+      phone,
+      role_id: 2,
+      password: cryptedPassword,
+    });
 
-  await userQueries.create({
-    email,
-    username,
-    firstname,
-    lastname,
-    phone,
-    role_id: 2,
-    password: cryptedPassword,
-  });
+    const user = await userQueries.get({ 'usr.id': userCreatedId }).first();
 
-  const [user] = await userQueries.get({ email });
+    const token = jwt.sign(
+      { user: user },
+      process.env.JWT_TOKEN_KEY,
+      { expiresIn: "2h" },
+    );
 
-  const token = jwt.sign(
-    { user: user },
-    process.env.JWT_TOKEN_KEY,
-    { expiresIn: "2h" },
-  );
+    user.token = token;
+    return res.status(200).json({ success: true, message: 'User created successfully', data: user });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: error })
+  }
 
-  user.token = token;
-  return res.status(201).json({ success: true, data: user });
 }
 
 exports.login = async (req, res) => {
   const { email, password } = req.body;
 
+  const errors = {};
   if (!email) {
-    console.error('Error Email');
-    return res.status(400).json({ error: 'email is required' });
+    errors.email = 'Email is required';
   }
-
   if (!password) {
-    console.error('Error password');
-    return res.status(400).json({ error: 'password is required' });
+    errors.password = 'Password is required';
+  }
+  if (Object.keys(errors).length > 0) {
+    return res.status(400).json(Error(400, 'Invalid data', errors));
   }
 
   try {
     userQueries.set();
-    let [user] = await userQueries.get({ email: email }, true);
+    const user = await userQueries.get({ email: email }, true).first();
     if (user) {
       const samePassword = await bcrypt.compare(password, user.password.toString())
       if (samePassword) {
@@ -93,11 +102,11 @@ exports.login = async (req, res) => {
           process.env.JWT_TOKEN_KEY,
           { expiresIn: "2h" },
         );
-        return res.status(200).json({ user: user, token: token });
+        return res.status(200).json({ success: true, user: user, token: token });
       }
     }
 
-    return res.status(400).json({ error: 'Invalid user email or password ' });
+    return res.status(400).json(Error(400, 'Invalid email or password'));
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: 'fqq' })
@@ -106,7 +115,12 @@ exports.login = async (req, res) => {
 }
 
 exports.user = async (req, res) => {
-  userQueries.set();
-  const user = await userQueries.get({ id: req.user.id });
-  res.json({ user: user }).status(200);
+  try {
+    userQueries.set();
+    const user = await userQueries.get({ 'usr.id': req.user.id }).first();
+    res.json({ user: user }).status(200);
+  } catch (error) {
+    console.error(error);
+    return res.json(Error(500, 'Internal server error'));
+  }
 }

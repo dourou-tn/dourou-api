@@ -123,7 +123,6 @@ exports.store = async (req, res) => {
 
 exports.update = async (req, res) => {
   const errors = validateUserInput(req.body, { edit: true })
-  console.log('errors', errors)
   if (Object.keys(errors).length > 0) {
     return res.status(400).json(errors);
   }
@@ -188,7 +187,7 @@ exports.delete = async (req, res) => {
       return res.json(userDeleted);
     }
   } catch (error) {
-    console.log(error);
+    console.error(error);
     res.status(500).json(error);
   }
 

@@ -9,7 +9,7 @@ const auctions = require('./auctions');
 // auth
 router.post('/auth/register', auth.register);
 router.post('/auth/login', auth.login);
-router.post('/auth/user', authMiddleware, auth.user);
+router.get('/auth/user', authMiddleware, auth.user);
 
 // users
 router.get('/users', authMiddleware, users.index);
