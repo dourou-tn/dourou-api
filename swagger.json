@@ -27,6 +27,10 @@
     {
       "name": "Bids",
       "description": "Bids Api"
+    },
+    {
+      "name": "Config",
+      "description": "General config Api"
     }
   ],
   "schemes": [
@@ -281,6 +285,34 @@
           }
         }
       }
+    },
+    "/config": {
+      "get": {
+        "tags": [
+          "Config"
+        ],
+        "summary": "Get one or more config keys",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "key",
+            "description": "Key to get",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Config"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -433,6 +465,34 @@
           "type": "string",
           "minLength": 8,
           "maxLength": 20
+        }
+      }
+    },
+    "Config": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          },
+          "meta": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       }
     }

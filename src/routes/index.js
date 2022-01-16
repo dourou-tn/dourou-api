@@ -5,6 +5,7 @@ const auth = require('./auth');
 const users = require('./users');
 const products = require('./products');
 const auctions = require('./auctions');
+const config = require('./config');
 
 // auth
 router.post('/auth/register', auth.register);
@@ -28,5 +29,8 @@ router.get('/auctions', authMiddleware, auctions.index);
 router.post('/auctions', authMiddleware, auctions.store);
 router.put('/auctions/:id', authMiddleware, auctions.update);
 router.delete('/auctions/:id', authMiddleware, auctions.delete);
+
+// config
+router.get('/config', config.get);
 
 module.exports = router
