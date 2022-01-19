@@ -52,7 +52,7 @@ exports.index = async (req, res) => {
         return {
           ...auction,
           product: JSON.parse(auction.product),
-          start_date: moment(auction.start_date).format('YYYY-MM-DD')
+          start_date: moment(auction.start_date).format('YYYY-MM-DD HH:mm:ss')
         }
       })
     );
@@ -85,8 +85,6 @@ exports.store = async (req, res) => {
       start_date: `${start_date} ${start_time}`,
       description,
       product_id,
-      start_date,
-      start_time,
       product_id,
       subscribe_price,
       start_price,
@@ -111,14 +109,14 @@ exports.update = async (req, res) => {
     return res.status(400).json(errors);
   }
   try {
-    const auction = await auctionQueries.get({ id: req.params.id }).first();
+    const auction = await auctionQueries.get({ 'act.id': req.params.id }).first();
     if (!auction) {
       return res.status(400).json({ success: false, error: `Auction with ${req.params.id} does not exists!` });
     }
 
     // change product
     if (req.body.product_id !== auction.product_id) {
-      const product = await productQueries.get({ id: req.body.product_id }).first();
+      const product = await productQueries.get({ 'prod.id': req.body.product_id }).first();
       if (!product) {
         return res.status(400).json({ success: false, error: `Product with ${req.body.product_id} does not exists!` });
       }
@@ -163,4 +161,11 @@ exports.show = async (req, res) => {
     return res.status(400).json({ success: false, error: `Auction with ${req.params.id} does not exists!` });
   }
   return res.status(200).json(auction);
+}
+
+// TODO: move this route to /client/auction
+exports.upcoming = async (req, res) => {
+  auctionQueries.set();
+  const auctions = await auctionQueries.upcoming();
+  return res.status(200).json(auctions);
 }

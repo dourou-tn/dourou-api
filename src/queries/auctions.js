@@ -3,10 +3,10 @@ const moment = require('moment');
 const Knex = require('@/tools/Knex');
 
 module.exports = {
-  orm: null,
+  orm: (table) => Knex(table),
 
   set(orm = Knex) {
-    this.orm = orm
+    this.orm = orm;
   },
 
   get(where = null) {
@@ -14,7 +14,6 @@ module.exports = {
       'act.id',
       'act.description',
       'act.start_date',
-      'act.start_time',
       'act.product_id',
       'act.is_finished',
       'act.subscribe_price',
@@ -22,12 +21,13 @@ module.exports = {
       'act.max_size',
       'act.created_at',
       'act.updated_at',
-      Knex.raw('JSON_OBJECT(\'id\', prod.id, \'name\', prod.name, \'price\', prod.price) as product')
+      Knex.raw('JSON_OBJECT(\'id\', prod.id, \'name\', prod.name, \'price\', prod.price, \'image_path\', img.image_path) as product')
     )
     if (where) {
       query.where(where);
     }
     query.join('products as prod', { 'prod.id': 'act.product_id' });
+    query.leftJoin('imagables as img', { 'img.imagable_id': 'prod.id', 'img.imagable_type': Knex.raw('?', ['Product']) });
     return query;
   },
 
@@ -36,19 +36,18 @@ module.exports = {
       uiid: data.uiid,
       description: data.description,
       start_date: data.start_date,
-      start_time: data.start_time,
       product_id: data.product_id,
       is_finished: data.is_finished,
       subscribe_price: data.subscribe_price,
       start_price: data.start_price,
       max_size: data.max_size,
-      created_at: moment().format('YYY-MM-DD HH:mm:ss'),
-      updated_at: moment().format('YYY-MM-DD HH:mm:ss'),
+      created_at: moment().format('YY-MM-DD HH:mm:ss'),
+      updated_at: moment().format('YY-MM-DD HH:mm:ss'),
     });
   },
 
   update(where, data) {
-    return this.orm('products').where(where).update({
+    return this.orm('auctions').where(where).update({
       description: data.description,
       start_date: data.start_date,
       product_id: data.product_id,
@@ -56,12 +55,16 @@ module.exports = {
       subscribe_price: data.subscribe_price,
       start_price: data.start_price,
       max_size: data.max_size,
-      updated_at: moment().format('YYY-MM-DD HH:mm:ss'),
+      updated_at: moment().format('YY-MM-DD HH:mm:ss'),
     });
   },
 
   delete(where) {
     const query = this.orm('auctions').where(where).delete();
     return query;
+  },
+
+  upcoming () {
+    return this.get().where('start_date', '>', moment().format('YYYY-MM-DD HH:mm:ss'));
   }
 }

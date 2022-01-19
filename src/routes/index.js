@@ -29,6 +29,8 @@ router.get('/auctions', authMiddleware, auctions.index);
 router.post('/auctions', authMiddleware, auctions.store);
 router.put('/auctions/:id', authMiddleware, auctions.update);
 router.delete('/auctions/:id', authMiddleware, auctions.delete);
+// TODO: change this route to /client/auction/upcoming
+router.get('/auctions/upcoming', auctions.upcoming);
 
 // config
 router.get('/config', config.get);

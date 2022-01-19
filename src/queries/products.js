@@ -3,7 +3,7 @@ const moment = require('moment');
 const Knex = require('@/tools/Knex');
 
 module.exports = {
-  orm: null,
+  orm: (table) => Knex(table),
 
   set(orm = Knex) {
     this.orm = orm
