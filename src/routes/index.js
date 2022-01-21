@@ -6,7 +6,10 @@ const users = require('./users');
 const products = require('./products');
 const auctions = require('./auctions');
 const config = require('./config');
-const subscribe = require('./subscribe');
+
+// client
+const clientAuction = require('./client/auctions');
+const clientSubscribe = require('./client/subscribe');
 
 // auth
 router.post('/auth/register', auth.register);
@@ -30,12 +33,12 @@ router.get('/auctions', authMiddleware, auctions.index);
 router.post('/auctions', authMiddleware, auctions.store);
 router.put('/auctions/:id', authMiddleware, auctions.update);
 router.delete('/auctions/:id', authMiddleware, auctions.delete);
-// TODO: change this route to /client/auction/upcoming
-router.get('/auctions/upcoming', auctions.upcoming);
 router.get('/auctions/:id', authMiddleware, auctions.show);
 
+// client
+router.get('/client/auctions/upcoming', clientAuction.upcoming);
 // subscribe
-router.post('/auctions/subscribe', authMiddleware, subscribe.subscribe);
+router.post('/client/auctions/subscribe', authMiddleware, clientSubscribe.subscribe);
 
 // config
 router.get('/config', config.get);

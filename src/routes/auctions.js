@@ -174,10 +174,3 @@ exports.show = async (req, res) => {
     start_time: moment(auction.start_date).format('HH:mm:ss'),
   });
 }
-
-// TODO: move this route to /client/auction
-exports.upcoming = async (req, res) => {
-  auctionQueries.set();
-  const auctions = await auctionQueries.upcoming();
-  return res.status(200).json(auctions);
-}
