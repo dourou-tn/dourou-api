@@ -81,10 +81,10 @@ exports.login = async (req, res) => {
 
   const errors = {};
   if (!email) {
-    errors.email = 'Email is required';
+    errors.email = 'email_is_required';
   }
   if (!password) {
-    errors.password = 'Password is required';
+    errors.password = 'password_is_required';
   }
   if (Object.keys(errors).length > 0) {
     return res.status(400).json(Error(400, 'Invalid data', errors));
@@ -106,7 +106,7 @@ exports.login = async (req, res) => {
       }
     }
 
-    return res.status(400).json(Error(400, 'Invalid email or password'));
+    return res.status(400).json(Error(400, 'invalid_email_or_password'));
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: 'fqq' })
