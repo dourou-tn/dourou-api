@@ -1,6 +1,7 @@
 const moment = require('moment');
 const auctionQueries = require('@/queries/auctions');
 const productQueries = require('@/queries/products');
+const subscribeQueries = require('@/queries/subscribe');
 // import uiid 4
 const { v4: uuidv4 } = require('uuid');
 
@@ -156,16 +157,20 @@ exports.delete = async (req, res) => {
 
 exports.show = async (req, res) => {
   auctionQueries.set();
-  const auction = await auctionQueries.get({ 'act.id': req.params.id }).first();
+  subscribeQueries.set();
+
+  const auction = await auctionQueries.get({ 'act.id': req.params.id }).first()
+
   if (!auction) {
     return res.status(400).json({ success: false, error: `Auction with ${req.params.id} does not exists!` });
   }
-  return res.status(200).json(auction);
-}
 
-// TODO: move this route to /client/auction
-exports.upcoming = async (req, res) => {
-  auctionQueries.set();
-  const auctions = await auctionQueries.upcoming();
-  return res.status(200).json(auctions);
+  auction.is_subscribed = await subscribeQueries.get({ 'sub.auction_id': auction.id, 'sub.user_id': req.user.id }).first() ? true : false;
+
+  // return res.status(200).json(auction);
+  return res.status(200).json({
+    ...auction,
+    start_date: moment(auction.start_date).format('YYYY-MM-DD'),
+    start_time: moment(auction.start_date).format('HH:mm:ss'),
+  });
 }
