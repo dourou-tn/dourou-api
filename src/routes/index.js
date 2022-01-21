@@ -6,10 +6,12 @@ const users = require('./users');
 const products = require('./products');
 const auctions = require('./auctions');
 const config = require('./config');
+const packs = require('./packs');
 
 // client
 const clientAuction = require('./client/auctions');
 const clientSubscribe = require('./client/subscribe');
+const clientPacks = require('./client/packs');
 
 // auth
 router.post('/auth/register', auth.register);
@@ -35,13 +37,19 @@ router.put('/auctions/:id', authMiddleware, auctions.update);
 router.delete('/auctions/:id', authMiddleware, auctions.delete);
 router.get('/auctions/:id', authMiddleware, auctions.show);
 
+// packs
+router.get('/packs', authMiddleware, packs.index);
+router.post('/packs', authMiddleware, packs.store);
+router.get('/packs/:id', authMiddleware, packs.show);
+router.put('/packs/:id', authMiddleware, packs.update);
+router.delete('/packs/:id', authMiddleware, packs.delete);
+
 // client
 router.get('/client/auctions/upcoming', clientAuction.upcoming);
-// subscribe
 router.post('/client/auctions/subscribe', authMiddleware, clientSubscribe.subscribe);
+router.post('/client/packs/buy', authMiddleware, clientPacks.buy)
 
 // config
 router.get('/config', config.get);
-
 
 module.exports = router

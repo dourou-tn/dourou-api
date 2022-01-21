@@ -26,6 +26,7 @@ module.exports = {
       'usr.lastname',
       'usr.role_id',
       'usr.phone',
+      'usr.tokens',
       'img.image_path as image_path',
     )
 
@@ -72,5 +73,8 @@ module.exports = {
   delete(where) {
     const query = this.orm('users').where(where).delete();
     return query;
+  },
+  inscrementTokens(userId, tokens) {
+    return this.orm('users').where({ id: userId }).increment('tokens', tokens);
   }
 }

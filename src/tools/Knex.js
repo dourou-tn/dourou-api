@@ -6,7 +6,15 @@ const Knex = require('knex')({
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_DATABASE
-  }
+  },
+  // TODO: Look to set the default timezone tunisia!
+  // pool: {
+  //   afterCreate: function (connection, callback) {
+  //     connection.query('SET time_zone = timezone;', function (err) {
+  //       callback(err, connection);
+  //     });
+  //   }
+  // }
 })
 
 module.exports = Knex;
