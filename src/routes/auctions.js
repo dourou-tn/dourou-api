@@ -83,7 +83,7 @@ exports.store = async (req, res) => {
     auctionQueries.set();
     const [auctionCreatedId] = await auctionQueries.create({
       uiid: uuidv4(),
-      start_date: `${start_date} ${start_time}`,
+      start_date: `${start_date}`,
       description,
       product_id,
       product_id,

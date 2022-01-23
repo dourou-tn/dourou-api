@@ -14,6 +14,7 @@ module.exports = {
       'act.id',
       'act.description',
       'act.start_date',
+      'act.duration',
       'act.product_id',
       'act.is_finished',
       'act.subscribe_price',
@@ -66,5 +67,9 @@ module.exports = {
 
   upcoming () {
     return this.get().where('start_date', '>', moment().format('YYYY-MM-DD HH:mm:ss'));
+  },
+
+  live () {
+    return this.get().where('start_date', '<=', moment().format('YYYY-MM-DD HH:mm:ss')).where('is_finished', null);
   }
 }
