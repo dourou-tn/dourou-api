@@ -46,6 +46,7 @@ router.delete('/packs/:id', authMiddleware, packs.delete);
 
 // client
 router.get('/client/auctions/upcoming', clientAuction.upcoming);
+router.get('/client/auctions/live', clientAuction.live);
 router.post('/client/auctions/subscribe', authMiddleware, clientSubscribe.subscribe);
 router.post('/client/packs/buy', authMiddleware, clientPacks.buy)
 
