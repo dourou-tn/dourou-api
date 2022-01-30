@@ -159,3 +159,15 @@ exports.delete = async (req, res) => {
     res.status(500).json(error);
   }
 }
+
+exports.show = async (req, res) => {
+  productQueries.set();
+  console.log('SHOW', req.params.id);
+  try {
+    const product = await productQueries.get({ 'prod.id': req.params.id }).first();
+    return res.status(200).json(product);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json(error);
+  }
+}

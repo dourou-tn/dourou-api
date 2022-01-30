@@ -159,18 +159,14 @@ exports.show = async (req, res) => {
   auctionQueries.set();
   subscribeQueries.set();
 
-  const auction = await auctionQueries.get({ 'act.id': req.params.id }).first()
+  const auction = await auctionQueries.getWithSubscribe(req.params.id, req.user.id).first();
 
   if (!auction) {
     return res.status(400).json({ success: false, error: `Auction with ${req.params.id} does not exists!` });
   }
 
-  auction.is_subscribed = await subscribeQueries.get({ 'sub.auction_id': auction.id, 'sub.user_id': req.user.id }).first() ? true : false;
-
-  // return res.status(200).json(auction);
   return res.status(200).json({
     ...auction,
-    start_date: moment(auction.start_date).format('YYYY-MM-DD'),
-    start_time: moment(auction.start_date).format('HH:mm:ss'),
+    start_date: moment(auction.start_date).format('YYYY-MM-DD HH:mm:ss')
   });
 }

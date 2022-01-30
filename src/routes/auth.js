@@ -117,8 +117,9 @@ exports.login = async (req, res) => {
 exports.user = async (req, res) => {
   try {
     userQueries.set();
-    const user = await userQueries.get({ 'usr.id': req.user.id }).first();
-    res.json({ user: user }).status(200);
+    const user = await userQueries.getWithSubscribed(req.user.id).first();
+    user.sub_auctions = user.sub_auctions ? user.sub_auctions.split(',') : null;
+    return res.json({ user: user }).status(200);
   } catch (error) {
     console.error(error);
     return res.json(Error(500, 'Internal server error'));

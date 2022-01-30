@@ -66,10 +66,19 @@ module.exports = {
   },
 
   upcoming () {
-    return this.get().where('start_date', '>', moment().format('YYYY-MM-DD HH:mm:ss'));
+    return this.get().where('act.start_date', '>', moment().format('YYYY-MM-DD HH:mm:ss'));
   },
 
   live () {
     return this.get().where('start_date', '<=', moment().format('YYYY-MM-DD HH:mm:ss')).where('is_finished', null);
+  },
+
+  getWithSubscribe (auctionId, userId) {
+    return this.get({ 'act.id': auctionId })
+      .select('uact.id as is_subscribed')
+      .leftJoin('auction_user as uact', function () {
+        this.on('uact.auction_id', '=', 'act.id')
+        this.on('uact.user_id', '=', userId)
+      })
   }
 }

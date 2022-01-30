@@ -7,6 +7,7 @@ const products = require('./products');
 const auctions = require('./auctions');
 const config = require('./config');
 const packs = require('./packs');
+const comingsoon = require('./comingsoon');
 
 // client
 const clientAuction = require('./client/auctions');
@@ -29,6 +30,7 @@ router.get('/products', authMiddleware, products.index);
 router.post('/products', authMiddleware, products.store);
 router.put('/products/:id', authMiddleware, products.update);
 router.delete('/products/:id', authMiddleware, products.delete);
+router.get('/products/:id', authMiddleware, products.show);
 
 // auctions
 router.get('/auctions', authMiddleware, auctions.index);
@@ -52,5 +54,8 @@ router.post('/client/packs/buy', authMiddleware, clientPacks.buy)
 
 // config
 router.get('/config', config.get);
+
+// comingsoon routes
+router.post('/comingsoon/newsletter', comingsoon.newsletter);
 
 module.exports = router

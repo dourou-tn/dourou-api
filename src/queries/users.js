@@ -76,5 +76,11 @@ module.exports = {
   },
   inscrementTokens(userId, tokens) {
     return this.orm('users').where({ id: userId }).increment('tokens', tokens);
+  },
+  getWithSubscribed (userId) {
+    return this.get({ 'usr.id': userId })
+      .select(Knex.raw('GROUP_CONCAT(actusr.auction_id) as sub_auctions'))
+      .leftJoin('auction_user as actusr', { 'actusr.user_id': 'usr.id' })
+      .groupBy('img.image_path')
   }
 }
