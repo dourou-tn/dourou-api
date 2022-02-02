@@ -1,5 +1,6 @@
 const router = require('express').Router()
 const authMiddleware = require('@/middlewares/auth');
+const isSubscribedMiddleware = require('@/middlewares/isSubscribed');
 
 const auth = require('./auth');
 const users = require('./users');
@@ -13,6 +14,7 @@ const comingsoon = require('./comingsoon');
 const clientAuction = require('./client/auctions');
 const clientSubscribe = require('./client/subscribe');
 const clientPacks = require('./client/packs');
+const clientRoom = require('./client/room');
 
 // auth
 router.post('/auth/register', auth.register);
@@ -51,11 +53,14 @@ router.get('/client/auctions/upcoming', clientAuction.upcoming);
 router.get('/client/auctions/live', clientAuction.live);
 router.post('/client/auctions/subscribe', authMiddleware, clientSubscribe.subscribe);
 router.post('/client/packs/buy', authMiddleware, clientPacks.buy)
+// client/room
+router.post('/client/room', authMiddleware, isSubscribedMiddleware, clientRoom.room);
 
 // config
 router.get('/config', config.get);
 
 // comingsoon routes
 router.post('/comingsoon/newsletter', comingsoon.newsletter);
+
 
 module.exports = router

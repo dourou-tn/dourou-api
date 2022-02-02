@@ -12,6 +12,7 @@ module.exports = {
   get(where = null) {
     const query = this.orm('auctions as act').select(
       'act.id',
+      'act.uiid',
       'act.description',
       'act.start_date',
       'act.duration',

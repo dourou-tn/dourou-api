@@ -2,6 +2,7 @@ const auctionQueries = require('@/queries/auctions');
 const subscribeQueries = require('@/queries/subscribe');
 const jwt = require("jsonwebtoken");
 const SECRET = process.env.JWT_TOKEN_KEY;
+const moment = require('moment');
 
 exports.upcoming = async (req, res) => {
   auctionQueries.set();
@@ -52,13 +53,13 @@ exports.live = async (req, res) => {
       auctions.select('uact.id as is_subscribed');
     }
 
+    // FIXME: this is duplicated code in /src/routes/client/room.js
     auctions = await auctions;
-    console.log('auc', auctions);
-    // if (req.user) {
-    //   for (const auction of auctions) {
-    //     auction.is_subscribed = await subscribeQueries.get({ 'sub.auction_id': auction.id, 'sub.user_id': req.user.id }) ? true : false;
-    //   }
-    // }
+    auctions = auctions.map(auction => ({
+      ...auction,
+      product: JSON.parse(auction.product),
+      end_date: moment(auction.start_date).add(auction.duration, 'minutes'),
+    }));
 
     return res.status(200).json(auctions);
   } catch (error) {
