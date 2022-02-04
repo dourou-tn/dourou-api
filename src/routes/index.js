@@ -54,7 +54,8 @@ router.get('/client/auctions/live', clientAuction.live);
 router.post('/client/auctions/subscribe', authMiddleware, clientSubscribe.subscribe);
 router.post('/client/packs/buy', authMiddleware, clientPacks.buy)
 // client/room
-router.post('/client/room', authMiddleware, isSubscribedMiddleware, clientRoom.room);
+router.post('/client/room', authMiddleware, isSubscribedMiddleware, clientRoom.join);
+router.post('/client/room/bid', authMiddleware, isSubscribedMiddleware, clientRoom.bid);
 
 // config
 router.get('/config', config.get);

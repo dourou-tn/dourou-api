@@ -20,6 +20,7 @@ module.exports = {
       'act.is_finished',
       'act.subscribe_price',
       'act.start_price',
+      'act.current_price',
       'act.max_size',
       'act.created_at',
       'act.updated_at',
@@ -42,6 +43,7 @@ module.exports = {
       is_finished: data.is_finished,
       subscribe_price: data.subscribe_price,
       start_price: data.start_price,
+      current_price: data.current_price,
       max_size: data.max_size,
       created_at: moment().format('YY-MM-DD HH:mm:ss'),
       updated_at: moment().format('YY-MM-DD HH:mm:ss'),
@@ -81,5 +83,9 @@ module.exports = {
         this.on('uact.auction_id', '=', 'act.id')
         this.on('uact.user_id', '=', userId)
       })
+  },
+
+  incrementCurrentPrice (auctionId, amount) {
+    return this.orm('auctions').where({ id: auctionId }).increment('current_price', amount);
   }
 }

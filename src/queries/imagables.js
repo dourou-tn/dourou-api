@@ -15,8 +15,8 @@ module.exports = {
       imagable_id: data.imagable_id,
       image_path: data.image_path,
       image_name: data.image_name,
-      created_at: moment().format('YYY-MM-DD HH:mm:ss'),
-      updated_at: moment().format('YYY-MM-DD HH:mm:ss'),
+      created_at: moment().format('YYYY-MM-DD HH:mm:ss'),
+      updated_at: moment().format('YYYY-MM-DD HH:mm:ss'),
     })
   },
 

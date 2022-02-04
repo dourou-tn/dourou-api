@@ -24,6 +24,5 @@ module.exports = async (req, res, next) => {
     console.error(`User ${user.id} is not subscribed to auction ${auction_id}`);
     return res.status(401).send(Error(401, 'You are not subscribed to this auction'));
   }
-  console.log('subscribe', subscribe);
   next();
 }
