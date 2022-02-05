@@ -45,6 +45,7 @@ module.exports = {
       start_price: data.start_price,
       current_price: data.current_price,
       max_size: data.max_size,
+      duration: data.duration,
       created_at: moment().format('YY-MM-DD HH:mm:ss'),
       updated_at: moment().format('YY-MM-DD HH:mm:ss'),
     });
@@ -59,6 +60,7 @@ module.exports = {
       subscribe_price: data.subscribe_price,
       start_price: data.start_price,
       max_size: data.max_size,
+      duration: data.duration,
       updated_at: moment().format('YY-MM-DD HH:mm:ss'),
     });
   },

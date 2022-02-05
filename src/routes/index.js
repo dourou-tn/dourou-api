@@ -6,6 +6,7 @@ const auth = require('./auth');
 const users = require('./users');
 const products = require('./products');
 const auctions = require('./auctions');
+const jobs = require('./jobs');
 const config = require('./config');
 const packs = require('./packs');
 const comingsoon = require('./comingsoon');
@@ -40,6 +41,15 @@ router.post('/auctions', authMiddleware, auctions.store);
 router.put('/auctions/:id', authMiddleware, auctions.update);
 router.delete('/auctions/:id', authMiddleware, auctions.delete);
 router.get('/auctions/:id', authMiddleware, auctions.show);
+
+// jobs
+router.get('/jobs/types', authMiddleware, jobs.getTypes);
+router.get('/jobs/states', authMiddleware, jobs.getStates);
+router.get('/jobs', authMiddleware, jobs.index);
+router.post('/jobs', authMiddleware, jobs.store);
+router.put('/jobs/:id', authMiddleware, jobs.update);
+router.delete('/jobs/:id', authMiddleware, jobs.delete);
+router.get('/jobs/:id', authMiddleware, jobs.show);
 
 // packs
 router.get('/packs', authMiddleware, packs.index);

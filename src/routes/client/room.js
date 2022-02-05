@@ -34,29 +34,23 @@ exports.join = async (req, res) => {
 exports.bid = async (req, res) => {
   const { auction_id, amount } = req.body;
   const user = req.user;
-  console.log('USER', user);
 
   // 1. check if user has tokens
   userQueries.set();
   let { tokens } = await userQueries.orm('users').select('tokens').where({ id: user.id }).first();
-  console.log('user tokens', tokens);
   if (tokens < 1) {
     return res.status(403).json({ message: 'You have no tokens' });
   }
   // 2. store history
   bidQueries.set();
   const bid = await bidQueries.save({ auction_id, user_id: user.id, price: amount });
-  console.log('bid saved', bid);
   // 3. update user tokens
   const userUpdated = await userQueries.update(user.id, { tokens: tokens - 1 });
-  console.log('user updated', userUpdated);
   // 4. update auction current_price
   const auctionUpdated = await auctionQueries.incrementCurrentPrice(auction_id, amount);
-  console.log('auction updated', auctionUpdated);
 
   // 5. get current_price
   const { current_price } = await auctionQueries.orm('auctions').select('current_price').where({ id: auction_id }).first();
-  console.log('current_price', current_price);
 
   // 5. dispatch to all sockets in the channel/room.
   // current_price, last_bider: user_name, amount

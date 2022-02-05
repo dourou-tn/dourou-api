@@ -6,6 +6,7 @@ const jobQueries = require('@/queries/jobs');
 // import uiid 4
 const { v4: uuidv4 } = require('uuid');
 
+const { Job } = require('@/Job');
 const { engine: roomEngine } = require('@/roomEngine');
 
 const validateAuctionInput = (auction, config = null) => {
@@ -74,7 +75,7 @@ exports.store = async (req, res) => {
   }
 
   try {
-    const { start_date, description, start_time, product_id, subscribe_price, start_price, max_size } = req.body;
+    const { start_date, description, start_time, product_id, subscribe_price, start_price, max_size, duration } = req.body;
 
 
     productQueries.set();
@@ -93,25 +94,16 @@ exports.store = async (req, res) => {
       subscribe_price,
       start_price,
       max_size,
+      duration,
       current_price: start_price,
     });
 
     if (auctionCreatedId) {
       const auction = await auctionQueries.get({ 'act.id': auctionCreatedId }).first();
-      // const auction = await auctionQueries.get({ 'act.id': auctionCreatedId }).first();
 
-      /** Job wil be fired when auction starts */
-      jobQueries.set();
-      await jobQueries.create({
-        uiid: uuidv4(),
-        type: 'auction-start',
-        state: 'idle',
-        data: { auction_id: auction.id, start_date: auction.start_date}
-      });
-
-      const job = roomEngine.openRoomJob({ auction_id: auction.id, start_date: auction.start_date, duration: 2 });
-      job.start();
-
+       // save job and start the job
+      const auctionInfo = { auction_id: auction.id, start_date: auction.start_date, duration: auction.duration };
+      await Job.createJob(auctionInfo);
       return res.status(200).json(auction);
     }
 

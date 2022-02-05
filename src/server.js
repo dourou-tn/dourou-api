@@ -1,6 +1,10 @@
 require('dotenv').config({ path: '../.env' });
 require('module-alias/register');
 
+// init jobs
+const { Job } = require('@/Job');
+
+
 const path = require('path');
 const cors = require('cors');
 
@@ -31,8 +35,13 @@ app.get('/', (req, res) => {
   res.json({ success: req.body });
 });
 
-const PORT = process.env.API_PORT
+const PORT = process.env.API_PORT;
 
-app.listen(PORT, () => {
-  console.log(`👀 Server is running on port ${PORT}`)
-})
+const startServer = async () => {
+  await Job.initJobs();
+
+  app.listen(PORT, () => {
+    console.log(`🚀 Server is running on port ${PORT}`);
+  });
+}
+startServer();
