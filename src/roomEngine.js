@@ -48,6 +48,7 @@ const engine = {
     this.interval = setInterval(async () => {
       const now = moment();
       const time_remaining = this.end_date - now;
+      console.log('>> time_remaining', time_remaining);
 
       // end of the auction
       if (time_remaining <= 0) {
@@ -59,7 +60,7 @@ const engine = {
         await auctionQueries.update({ id: this.auction_id }, { is_finished: true });
         jobQueries.set();
         await jobQueries.update({ auction_id: this.auction_id }, { state_id: 4});
-        console.log('🤖 Job [%s] for auction %s ended as %s', this.job_uiid, this.auction_id, now.clone().format('YYYY-MM-DD HH:mm:ss'));
+        console.log('🤖 Auction %s ended at %s', this.job_uiid, this.auction_id, now.clone().format('YYYY-MM-DD HH:mm:ss'));
       }
 
       // regular_phase

@@ -41,6 +41,7 @@ router.post('/auctions', authMiddleware, auctions.store);
 router.put('/auctions/:id', authMiddleware, auctions.update);
 router.delete('/auctions/:id', authMiddleware, auctions.delete);
 router.get('/auctions/:id', authMiddleware, auctions.show);
+router.post('/auctions/start', auctions.start);
 
 // jobs
 router.get('/jobs/types', authMiddleware, jobs.getTypes);

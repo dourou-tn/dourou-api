@@ -1,12 +1,14 @@
 const moment = require('moment');
+const axios = require('axios');
+
 const auctionQueries = require('@/queries/auctions');
 const productQueries = require('@/queries/products');
 const subscribeQueries = require('@/queries/subscribe');
-const jobQueries = require('@/queries/jobs');
 // import uiid 4
 const { v4: uuidv4 } = require('uuid');
 
 const { Job } = require('@/Job');
+const { engine } = require('@/roomEngine');
 
 const validateAuctionInput = (auction, config = null) => {
   const errors = {};
@@ -76,7 +78,6 @@ exports.store = async (req, res) => {
   try {
     const { start_date, description, start_time, product_id, subscribe_price, start_price, max_size, duration } = req.body;
 
-
     productQueries.set();
     const product = await productQueries.get({ 'prod.id': product_id });
     if (!product) {
@@ -86,7 +87,8 @@ exports.store = async (req, res) => {
     auctionQueries.set();
     const [auctionCreatedId] = await auctionQueries.create({
       uiid: uuidv4(),
-      start_date: `${start_date}`,
+      start_date: start_date,
+      end_date: `${moment(start_date).add(duration, 'm').format('YYYY-MM-DD HH:mm:ss')}`,
       description,
       product_id,
       product_id,
@@ -101,8 +103,8 @@ exports.store = async (req, res) => {
       const auction = await auctionQueries.get({ 'act.id': auctionCreatedId }).first();
 
        // save job and start the job
-      const auctionInfo = { auction_id: auction.id, start_date: auction.start_date, duration: auction.duration };
-      await Job.createJob(auctionInfo);
+      await axios.post(`${process.env.JOB_HOST}/job/start`, { auction_id: auction.id, start_date: start_date });
+
       return res.status(200).json(auction);
     }
 
@@ -179,4 +181,26 @@ exports.show = async (req, res) => {
     ...auction,
     start_date: moment(auction.start_date).format('YYYY-MM-DD HH:mm:ss')
   });
+}
+
+exports.start = async (req, res) => {
+  const { auction_id } = req.body;
+  if (!auction_id) {
+    return req.res('400').json({ success: false, error: 'auction_id is required' });
+  }
+
+  auctionQueries.set();
+  const auction = await auctionQueries.get({ 'act.id': auction_id }).first();
+  console.log('auction', auction);
+  if (!auction) {
+    return res.status(400).json({ success: false, error: `Auction with ${auction_id} does not exists!` });
+  }
+
+  engine.startRoom({
+    auction_id,
+    start_date: moment(auction.start_date),
+    end_date: moment(auction.end_date),
+    duration: auction.duration,
+  });
+
 }

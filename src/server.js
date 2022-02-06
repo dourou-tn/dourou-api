@@ -38,10 +38,10 @@ app.get('/', (req, res) => {
 const PORT = process.env.API_PORT;
 
 const startServer = async () => {
-  await Job.initJobs();
+  // await Job.initJobs();
 
   app.listen(PORT, () => {
-    console.log(`🚀 Server is running on port ${PORT}`);
+    console.log(`🚀 [dourou-api] is running on port ${PORT}`);
   });
 }
 startServer();
