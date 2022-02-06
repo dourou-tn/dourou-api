@@ -24,7 +24,16 @@ exports.upcoming = async (req, res) => {
       auctions.select('uact.id as is_subscribed');
     }
 
-    return res.status(200).json(await auctions);
+    const auctionsResult = await auctions;
+
+    return res.status(200).json(auctionsResult.map(auction => {
+      return {
+        ...auction,
+        product: JSON.parse(auction.product),
+        start_date: moment(auction.start_date).format('YYYY-MM-DD HH:mm:ss')
+      }
+    }));
+
   } catch (error) {
     console.log(error);
     return res.status(500).json(error);
@@ -62,6 +71,17 @@ exports.live = async (req, res) => {
     }));
 
     return res.status(200).json(auctions);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json(error);
+  }
+}
+
+exports.completed = async (req, res) => {
+  auctionQueries.set();
+  try {
+    const auctions = await auctionQueries.completed();
+    return res.status(200).json(auctions.map(auction => ({ ...auction, product: JSON.parse(auction.product) })));
   } catch (error) {
     console.log(error);
     return res.status(500).json(error);

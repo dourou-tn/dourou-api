@@ -46,22 +46,15 @@ module.exports = {
       current_price: data.current_price,
       max_size: data.max_size,
       duration: data.duration,
-      created_at: moment().format('YY-MM-DD HH:mm:ss'),
-      updated_at: moment().format('YY-MM-DD HH:mm:ss'),
+      created_at: moment().format('YYYY-MM-DD HH:mm:ss'),
+      updated_at: moment().format('YYYY-MM-DD HH:mm:ss'),
     });
   },
 
   update(where, data) {
     return this.orm('auctions').where(where).update({
-      description: data.description,
-      start_date: data.start_date,
-      product_id: data.product_id,
-      is_finished: data.is_finished,
-      subscribe_price: data.subscribe_price,
-      start_price: data.start_price,
-      max_size: data.max_size,
-      duration: data.duration,
-      updated_at: moment().format('YY-MM-DD HH:mm:ss'),
+      ...data,
+      updated_at: moment().format('YYYY-MM-DD HH:mm:ss'),
     });
   },
 
@@ -76,6 +69,10 @@ module.exports = {
 
   live () {
     return this.get().where('start_date', '<=', moment().format('YYYY-MM-DD HH:mm:ss')).where('is_finished', null);
+  },
+
+  completed () {
+    return this.get().where('is_finished', true);
   },
 
   getWithSubscribe (auctionId, userId) {

@@ -4,6 +4,9 @@ const { Server } = require("socket.io");
 const io = new Server({ cors: { origin: 'http://localhost:8080' } });
 const moment = require('moment');
 
+const auctionQueries = require('@/queries/auctions');
+const jobQueries = require('@/queries/jobs');
+
 io.listen(3001);
 const engine = {
   // engine
@@ -42,20 +45,20 @@ const engine = {
 
     console.log(`✌️ Auction ${this.auction_id} with duration ${this.duration} started at ${this.start_date} and will end at ${this.end_date}`);
 
-    this.interval = setInterval(() => {
+    this.interval = setInterval(async () => {
       const now = moment();
       const time_remaining = this.end_date - now;
 
-      console.log('now', now);
-      console.log('time_remaining', time_remaining);
-
       // end of the auction
       if (time_remaining <= 0) {
-        console.log('[tick]:auction_end');
         this.io.emit('tick:auction_end');
         clearInterval(this.interval);
         // TODO: need to stop the auction process.
         // this.job.stop();
+        auctionQueries.set();
+        await auctionQueries.update({ id: this.auction_id }, { is_finished: true });
+        jobQueries.set();
+        await jobQueries.update({ auction_id: this.auction_id }, { state_id: 4});
         console.log('🤖 Job [%s] for auction %s ended as %s', this.job_uiid, this.auction_id, now.clone().format('YYYY-MM-DD HH:mm:ss'));
       }
 

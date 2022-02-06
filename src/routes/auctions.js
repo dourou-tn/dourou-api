@@ -7,25 +7,24 @@ const jobQueries = require('@/queries/jobs');
 const { v4: uuidv4 } = require('uuid');
 
 const { Job } = require('@/Job');
-const { engine: roomEngine } = require('@/roomEngine');
 
 const validateAuctionInput = (auction, config = null) => {
   const errors = {};
-  const { start_date, start_time, product_id, subscribe_price, start_price, max_size } = auction;
+  const { start_date, product_id, subscribe_price, start_price, max_size, duration } = auction;
 
   if (!start_date || !moment(start_date, 'YYYY-MM-DD').isValid()) {
     console.error('Error start_date')
     errors.start_date = 'start date is required';
   }
 
-  if (!start_time || !moment(start_time, 'HH:mm').isValid()) {
-    console.error('Error start_time')
-    errors.start_time = 'start_time is required';
-  }
-
   if (!product_id) {
     console.error('Error product_id')
     errors.product_id = 'product_id is required';
+  }
+
+  if (!duration) {
+    console.error('Error duration')
+    errors.duration = 'duration is required';
   }
 
   if (!subscribe_price || isNaN(subscribe_price)) {
@@ -114,7 +113,9 @@ exports.store = async (req, res) => {
 }
 
 exports.update = async (req, res) => {
-  const errors = validateAuctionInput(req.body, { edit: true })
+  const { start_date, product_id, subscribe_price, start_price, max_size, duration } = req.body;
+
+  const errors = validateAuctionInput({ start_date, product_id, subscribe_price, start_price, max_size, duration }, { edit: true })
   if (Object.keys(errors).length > 0) {
     return res.status(400).json(errors);
   }
@@ -132,7 +133,7 @@ exports.update = async (req, res) => {
       }
     }
 
-    const auctionUpdated = await auctionQueries.update({ id: req.params.id }, req.body);
+    const auctionUpdated = await auctionQueries.update({ id: req.params.id }, { start_date, product_id, subscribe_price, start_price, max_size, duration });
 
     if (!auctionUpdated) {
       return res.status(500).json({ success: false, erorr: 'Auction not updated' });
